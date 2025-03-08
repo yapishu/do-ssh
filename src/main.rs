@@ -49,22 +49,26 @@ async fn main() -> anyhow::Result<()> {
             .discovery_local_network();
         let ep = ep.bind().await?;
         println!("Node: {}", ep.node_id());
-        let conn = ep.accept().await.unwrap();
-        let conn = conn.await?;
-        let (mut tx, mut rx) = conn.accept_bi().await?;
-        if rx.read_u8().await? != 0 {
-            panic!();
-        }
-        let mut tcp = tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port)).await?;
-        let (mut tcprx, mut tcptx) = tcp.split();
-        let (res1, res2) = join!(
-            tokio::io::copy(&mut tcprx, &mut tx),
-            tokio::io::copy(&mut rx, &mut tcptx)
-        );
-        res1?;
-        res2?;
+        loop {
+            let conn = ep.accept().await.unwrap();
+            tokio::spawn(async move {
+                let conn = conn.await?;
+                let (mut tx, mut rx) = conn.accept_bi().await?;
+                if rx.read_u8().await? != 0 {
+                    panic!();
+                }
+                let mut tcp = tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port)).await?;
+                let (mut tcprx, mut tcptx) = tcp.split();
+                let (res1, res2) = join!(
+                    tokio::io::copy(&mut tcprx, &mut tx),
+                    tokio::io::copy(&mut rx, &mut tcptx)
+                );
+                res1?;
+                res2?;
 
-        Ok(())
+                Ok::<(), anyhow::Error>(())
+            });
+        }
     }
 }
 
