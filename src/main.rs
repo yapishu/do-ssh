@@ -1,6 +1,6 @@
 use anyhow::bail;
 use iroh::{Endpoint, NodeId, SecretKey};
-use std::{io::Read, str::FromStr};
+use std::str::FromStr;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     join,
@@ -38,12 +38,16 @@ async fn main() -> anyhow::Result<()> {
 
         Ok(())
     } else {
-        let key = read_key().await.unwrap_or({
-            println!("Generating new key...");
-            let key = SecretKey::generate(rand::rngs::OsRng);
-            tokio::fs::write("key.priv", key.clone().to_bytes()).await?;
-            key
-        });
+        let key = match read_key().await {
+            Ok(key) => key,
+            Err(err) => {
+                eprintln!("{}", err);
+                println!("Generating new key...");
+                let key = SecretKey::generate(rand::rngs::OsRng);
+                tokio::fs::write(KEY_PATH, &key.clone().to_bytes()).await?;
+                key
+            }
+        };
         let ep = Endpoint::builder()
             .secret_key(key)
             .alpns(vec![ALPN.to_vec()])
