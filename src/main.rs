@@ -1,5 +1,6 @@
+use anyhow::bail;
 use iroh::{Endpoint, NodeId, SecretKey};
-use std::str::FromStr;
+use std::{io::Read, str::FromStr};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     join,
@@ -38,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
         Ok(())
     } else {
         let key = read_key().await.unwrap_or({
-            println!("Generating new key");
+            println!("Generating new key...");
             let key = SecretKey::generate(rand::rngs::OsRng);
             tokio::fs::write("key.priv", key.clone().to_bytes()).await?;
             key
@@ -75,8 +76,9 @@ async fn main() -> anyhow::Result<()> {
 
 async fn read_key() -> anyhow::Result<SecretKey> {
     let key = tokio::fs::read(KEY_PATH).await?;
-    let bytes: &[u8; 32] = &key
-        .try_into()
-        .map_err(|_| anyhow::Error::msg("Invalid key format"))?;
-    Ok(SecretKey::from_bytes(bytes))
+    if key.len() != 32 {
+        bail!("Invalid key length");
+    }
+    let bytes: [u8; 32] = (*key.into_boxed_slice()).try_into().unwrap();
+    Ok(SecretKey::from_bytes(&bytes))
 }
