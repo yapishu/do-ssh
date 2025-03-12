@@ -1,4 +1,3 @@
-use anyhow::bail;
 use iroh::{Endpoint, NodeId, SecretKey};
 use std::str::FromStr;
 use tokio::{
@@ -71,7 +70,6 @@ async fn main() -> anyhow::Result<()> {
                 );
                 res1?;
                 res2?;
-
                 Ok::<(), anyhow::Error>(())
             });
         }
@@ -80,9 +78,6 @@ async fn main() -> anyhow::Result<()> {
 
 async fn read_key() -> anyhow::Result<SecretKey> {
     let key = tokio::fs::read(KEY_PATH).await?;
-    if key.len() != 32 {
-        bail!("Invalid key length");
-    }
-    let bytes: [u8; 32] = (*key.into_boxed_slice()).try_into().unwrap();
+    let bytes: [u8; 32] = (*key.into_boxed_slice()).try_into()?;
     Ok(SecretKey::from_bytes(&bytes))
 }
