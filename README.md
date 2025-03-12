@@ -25,8 +25,8 @@ Use the printed NodeId as the hostname for the ssh command and you are good to g
 Tip: Use something like a systemd-service to start the proxy on boot.
 
 ## Why?
-I got an raspberry pi laying around and recently started a project. But the pi is often at a different location and behind a NAT.
-To get around this I discovered iroh to create direct connections between devices. So I created this :)
+I got a raspberry pi laying around and recently started a project. But the pi often is at a different location and behind a NAT.
+To get around this I discovered iroh to create direct connections between devices. So I created this...
 
 ## Problems
 The delay is notable especially with poor connections.
@@ -34,7 +34,7 @@ If the IP of the client or server changes, the connection will most likely rebui
 
 If a direct connection cannot be established iroh uses its relay servers to transport packages.
 Remember, the connection is End-to-End encrypted but I never looked deeply into the source code of iroh.
-If you want to be absolutely sure, check out the imo awesome iroh project (Here)[https://github.com/n0-computer/iroh].
+If you want to be absolutely sure, check out the imo awesome iroh project [here](https://github.com/n0-computer/iroh).
 
 Because the proxy runs on the server itself the only way to log connections (with real addresses) is only possible from the proxy itself (ssh will always show 127.0.0.1 because this is where the TCP-connection comes from), which currently is not implemented.
 
