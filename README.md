@@ -39,10 +39,10 @@ If you want to be absolutely sure, check out the imo awesome iroh project [here]
 Because the proxy runs on the server itself the only way to log connections (with real addresses) is only possible from the proxy itself (ssh will always show 127.0.0.1 because this is where the TCP-connection comes from), which currently is not implemented.
 
 ### TODO: Planned in future:
-Provide compiled releases.
-Code-Documentation.
-Support for specifying port on server side.
-Log connections (print NodeId of client).
+- Provide compiled releases.
+- Code-Documentation.
+- Support for specifying port on server side.
+- Log connections (print NodeId of client).
 
 REMEMBER: This is more a proof of concept. It works (im using it myself) but NodeIds of clients change and the implemented iroh-protocol may receive breaking changes in the future.
 
