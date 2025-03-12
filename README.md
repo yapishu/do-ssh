@@ -1,15 +1,23 @@
 # do-ssh
-Tunnels a ssh-connextion over iroh.
+Tunnels a ssh-connection over iroh.
 
 ## How to use this on the client?
 Use the compiled executable as a ProxyCommand for ssh.
-`ssh USER@NODEID -o "ProxyCommand=do-ssh %h"`
+```ssh USER@NODEID -o "ProxyCommand=do-ssh %h"```
 You can use this with password login or key login, it supports everything native ssh supports.
 This program is just a proxy that tunnels the ssh-connection over iroh.
 Iroh uses direct connections over QUIC, which are End-to-End encrypted, so there is no risk on typing your password or using your key.
 
+Tip: Use the ssh-config file to specify the ProxyCommand:
+```
+Host EXAMPLE
+  Hostname NODEID
+  ProxyCommand do-ssh %h
+  # IdentityFile ~/.ssh/id_rsa
+```
+
 ## How to use this in the server?
-`do-ssh`
+`do-ssh`.
 That's it.
 This generates a persistant SecretKey at the current working directory and starts an iroh endpoint to connect to.
 Use the printed NodeId as the hostname for the ssh command and you are good to go.
