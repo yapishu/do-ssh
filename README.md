@@ -15,16 +15,16 @@ Host EXAMPLE
   ProxyCommand do-ssh client %h %p
   # IdentityFile ~/.ssh/id_rsa
 ```
-%h gets replaced by the hostname provided to ssh.
-%p gets replaced by the port proviced to ssh.
-Beware: ssh does not detect USER@HOSTNAME:PORT as single values! You have to provide the port per -p to ssh...
+`%h` gets replaced by the hostname provided to ssh.\
+`%p` gets replaced by the port proviced to ssh.\
+Beware: ssh does not detect USER@HOSTNAME:PORT as single values! You have to provide the port per `-p` to ssh...
 
 ## How to use this in the server?
 `do-ssh server`.
 That's it.
 This may generate a persistant SecretKey at the current working directory and starts an iroh endpoint to connect to.
 Use the printed NodeId as the hostname for the ssh command and you are good to go.
-You can always use -h with every subcommand to get a better hang of it.
+You can always use `-h` with every subcommand to get a better hang of it.
 
 Tip: Use something like a systemd-service to start the proxy on boot.
 Example systemd service file:
