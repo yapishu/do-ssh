@@ -36,7 +36,7 @@ async fn main() -> anyhow::Result<()> {
             }
             unreachable!();
         }
-        args::Sub::Gen {
+        args::Sub::Generate {
             key_file,
             r#override,
         } => generate(key_file, r#override).await,

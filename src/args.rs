@@ -35,7 +35,8 @@ pub enum Sub {
         port: u16,
     },
     /// Generate a new private key (which implies the node id)
-    Gen {
+    #[command(alias = "gen")]
+    Generate {
         /// Path to the keyfile to generate
         #[arg(
             short = 'k',
