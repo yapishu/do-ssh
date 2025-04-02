@@ -13,17 +13,22 @@ pub struct Cli {
 pub enum Sub {
     /// Start a server
     Server {
-        /// The path to the keyfile to use
-        #[arg(short = 'i', long = "key", default_value = "key.priv")]
+        /// The path of the keyfile to use
+        #[arg(
+            short = 'k',
+            short_aliases = ['i', 'f'],
+            long = "key",
+            default_value = "key.priv"
+        )]
         key_file: PathBuf,
-        /// Create a new keyfile
+        /// Prevent generating a new keyfile if none is found
         #[arg(short = 'n', long = "no-create", action = ArgAction::SetFalse)]
         create: bool,
     },
     /// Connect as a client
     Client {
         /// The iroh NodeId to connect to
-        #[arg(required = true)]
+        #[arg()]
         node_id: NodeId,
         /// The port of the ssh server
         #[arg(default_value_t = 22)]
@@ -32,7 +37,12 @@ pub enum Sub {
     /// Generate a new private key (which implies the node id)
     Gen {
         /// Path to the keyfile to generate
-        #[arg(short = 'i', short = 'k', long = "key", default_value = "key.priv")]
+        #[arg(
+            short = 'k',
+            short_aliases = ['i', 'f'],
+            long = "key",
+            default_value = "key.priv"
+        )]
         key_file: PathBuf,
         /// Allow replacing an existing file
         #[arg(short = 'o', long = "override")]
