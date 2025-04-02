@@ -22,3 +22,6 @@ Cargo.lock
 
 # Generated key file
 key.priv
+
+# Releases directory (where my builds go)
+releases/
