@@ -25,6 +25,7 @@ That's it.
 This may generate a persistant SecretKey at the current working directory and starts an iroh endpoint to connect to.
 Use the printed NodeId as the hostname for the ssh command and you are good to go.
 You can always use `-h` with every subcommand to get a better hang of it.
+Also: At default the only allowed port is 22. To allow other ports (or multiple) type `do-ssh server -p 22,2020,2222`.
 
 Tip: Use something like a systemd-service to start the proxy on boot.
 Example systemd service file:

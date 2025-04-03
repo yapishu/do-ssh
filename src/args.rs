@@ -24,6 +24,8 @@ pub enum Sub {
         /// Prevent generating a new keyfile if none is found
         #[arg(short = 'n', long = "no-create", action = ArgAction::SetFalse)]
         create: bool,
+        #[arg(short = 'p', long = "port", num_args = 0.., value_delimiter = ',', default_values_t = [22u16])]
+        ports: Vec<u16>,
     },
     /// Connect as a client
     Client {

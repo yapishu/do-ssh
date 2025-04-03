@@ -28,8 +28,12 @@ async fn main() -> anyhow::Result<()> {
                 exit(0);
             }
         }
-        args::Sub::Server { key_file, create } => {
-            if let Err(err) = server(key_file, create).await {
+        args::Sub::Server {
+            key_file,
+            create,
+            ports,
+        } => {
+            if let Err(err) = server(key_file, create, ports.into()).await {
                 eprintln!("{}", err);
                 eprintln!("Server crashed!");
                 exit(1);
@@ -117,7 +121,7 @@ async fn client(node_id: NodeId, port: u16) -> anyhow::Result<()> {
     res
 }
 
-async fn server(key_file: PathBuf, create: bool) -> anyhow::Result<()> {
+async fn server(key_file: PathBuf, create: bool, ports: Box<[u16]>) -> anyhow::Result<()> {
     let key = match tokio::fs::read(&key_file).await {
         Ok(file) => {
             //  Parse key
@@ -145,6 +149,7 @@ async fn server(key_file: PathBuf, create: bool) -> anyhow::Result<()> {
         //  Can be unwrapped, because we won't be here if the endpoint gets closed
         //    (This only returns None if the endpoint is closed)
         let connection = ep.accept().await.unwrap();
+        let ports = ports.clone();
         tokio::spawn(async move {
             let connection = match connection.await {
                 Ok(val) => val,
@@ -161,7 +166,7 @@ async fn server(key_file: PathBuf, create: bool) -> anyhow::Result<()> {
                 }
             };
             println!("Got connection: {}", connection.remote_node_id().unwrap());
-            if let Err(err) = handle_connection(tx, rx).await {
+            if let Err(err) = handle_connection(tx, rx, &ports).await {
                 connection.close(VarInt::from(1u8), &format!("{}", err).into_bytes());
                 _ = connection.closed().await;
 
@@ -177,8 +182,15 @@ async fn server(key_file: PathBuf, create: bool) -> anyhow::Result<()> {
     }
 }
 
-async fn handle_connection(mut tx: SendStream, mut rx: RecvStream) -> anyhow::Result<()> {
+async fn handle_connection(
+    mut tx: SendStream,
+    mut rx: RecvStream,
+    ports: &[u16],
+) -> anyhow::Result<()> {
     let port = rx.read_u16().await?;
+    if !ports.contains(&port) {
+        bail!("Locked port: {}", port);
+    }
     let mut tcp = tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port)).await?;
     println!("Created new connection with port {}", port);
     let (mut tcprx, mut tcptx) = tcp.split();
